@@ -83,6 +83,19 @@ if __name__ == "__main__":
 
     # -------------------------------------------------
     # Main simulation loop
+    target = 0 
+
+    path = []
+    try : 
+        with open("path.csv", "r") as file :
+            values = csv.DictReader(file)
+            for rows in values:
+             real_x = float(rows['x'])
+             real_y = float(rows['y'])
+             path.append((real_x,real_y))
+
+    except FileNotFoundError:
+        print("Error: path.csv not found!")
     # -------------------------------------------------
     while plt.fignum_exists(fig.number):
 
@@ -98,6 +111,37 @@ if __name__ == "__main__":
             # ---------------------------------------------
             # write your autonomous code here!!!!!!!!!!!!!
             # ---------------------------------------------
+            init_vel = 0.2
+            L_d = 1.2*init_vel + 0.6
+                
+            
+            target_pt = path[-1]
+            for i in range(target, len(path)):
+                dist = math.sqrt((path[i][0] - ideal_x)**2 + (path[i][1] - ideal_y)**2)
+                if dist >= L_d:
+                    target_pt = path[i]
+                    target = i
+                    break
+                   
+                   
+            dx = target_pt[0] - ideal_x
+            dy = target_pt[1] - ideal_y
+
+            delta_y = -dx * math.sin(ideal_theta) + dy * math.cos(ideal_theta)
+
+            final_dist = math.sqrt( (path[-1][0] - ideal_x)**2 + (path[-1][1] - ideal_y)**2)
+
+            if final_dist < 0.1:
+                 v = 0.0
+                 w = 0.0
+            else:
+                curvature = (2 * delta_y) / (L_d**2)
+
+                v = 1 / (1 + 1.2 * abs(curvature))
+                w = v*curvature
+
+
+            
 
             # ---------------------------------------------
             # Allowed inputs:
@@ -108,9 +152,6 @@ if __name__ == "__main__":
             # Required outputs:
             #   - v, w (linear and angular velocity commands)
 
-
-            v = 0.0
-            w = 0.0
 
             # ---------------------------------------------
             # don't edit below this line (visualization & robot stepping)
@@ -127,3 +168,4 @@ if __name__ == "__main__":
         )
 
         plt.pause(dt)
+
