@@ -140,7 +140,8 @@ if __name__ == "__main__":
                 v = 1 / (1 + 1.2 * abs(curvature))
                 w = v*curvature
 
-
+        #--------------------lidar obstacle detection------------------ 
+        
             
 
             # ---------------------------------------------
@@ -168,4 +169,5 @@ if __name__ == "__main__":
         )
 
         plt.pause(dt)
+
 
